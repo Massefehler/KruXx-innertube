@@ -8,6 +8,7 @@ import me.knighthat.innertube.response.Continuation
 import me.knighthat.innertube.response.MusicResponsiveListItemRenderer
 import me.knighthat.innertube.response.MusicTwoRowItemRenderer
 import me.knighthat.innertube.response.Runs
+import me.knighthat.innertube.response.Tabs
 import me.knighthat.innertube.response.Thumbnails
 
 @Serializable
@@ -44,8 +45,7 @@ internal data class InnertubePlaylistImpl(
         fun from( visitorData: String?, renderer: TwoColumnBrowseResultsRenderer ): InnertubePlaylist {
             val content = requireNotNull(
                 renderer.tabs
-                        .firstOrNull()
-                        ?.tabRenderer
+                        .firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
                         ?.content
                         ?.sectionListRenderer
                         ?.contents

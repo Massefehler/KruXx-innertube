@@ -54,6 +54,7 @@ import me.knighthat.innertube.response.NextResponse
 import me.knighthat.innertube.response.PlayerResponse
 import me.knighthat.innertube.response.PlaylistPanelRenderer
 import me.knighthat.innertube.response.SectionListRenderer
+import me.knighthat.innertube.response.Tabs
 import me.knighthat.innertube.util.InnertubeUtils
 import me.knighthat.internal.model.AccountInfoImpl
 import me.knighthat.internal.model.ContinuedPlaylistImpl
@@ -244,15 +245,13 @@ internal class InnertubeImpl: Innertube {
                             ?.tabbedRenderer
                             ?.watchNextTabbedResultsRenderer
                             ?.tabs
-                            ?.firstOrNull()
-                            ?.tabRenderer
+                            ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
                             ?.content
                             ?.musicQueueRenderer
                             ?.content
                             ?.playlistPanelRenderer
                             ?.contents
-                            ?.first()
-                            ?.playlistPanelVideoRenderer
+                            ?.firstNotNullOfOrNull(PlaylistPanelRenderer.Content::playlistPanelVideoRenderer )
             ) { "missing playlistPanelVideoRenderer while parsing songBasicInfo" }
 
             InnertubeSongImpl.from( renderer )
@@ -294,8 +293,7 @@ internal class InnertubeImpl: Innertube {
                         ?.tabbedRenderer
                         ?.watchNextTabbedResultsRenderer
                         ?.tabs
-                        ?.firstOrNull()
-                        ?.tabRenderer
+                        ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
                         ?.content
                         ?.musicQueueRenderer
                         ?.content
@@ -315,8 +313,7 @@ internal class InnertubeImpl: Innertube {
                 browseResponse.contents
                     ?.singleColumnBrowseResultsRenderer
                     ?.tabs
-                    ?.firstOrNull()
-                    ?.tabRenderer
+                    ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
                     ?.content
                     ?.sectionListRenderer
             ) { "missing sectionListRenderer while parsing charts" }
@@ -359,13 +356,11 @@ internal class InnertubeImpl: Innertube {
             response.contents
                     ?.singleColumnBrowseResultsRenderer
                     ?.tabs
-                    ?.firstOrNull()
-                    ?.tabRenderer
+                    ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
                     ?.content
                     ?.sectionListRenderer
                     ?.contents
-                    ?.firstOrNull()
-                    ?.gridRenderer
+                    ?.firstNotNullOfOrNull(SectionListRenderer.Content::gridRenderer )
                     ?.items
                     ?.map(SectionListRenderer.Content.GridRenderer.Item::musicTwoRowItemRenderer )
                     ?.mapNotNull { renderer ->

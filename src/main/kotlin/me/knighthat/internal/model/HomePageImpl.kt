@@ -6,6 +6,7 @@ import me.knighthat.innertube.model.Section
 import me.knighthat.innertube.response.BrowseResponse
 import me.knighthat.innertube.response.Continuation
 import me.knighthat.innertube.response.SectionListRenderer
+import me.knighthat.innertube.response.Tabs
 import me.knighthat.innertube.response.Thumbnails
 
 
@@ -27,8 +28,7 @@ data class HomePageImpl(
                 browseResponse.contents
                     ?.singleColumnBrowseResultsRenderer
                     ?.tabs
-                    ?.firstOrNull()
-                    ?.tabRenderer
+                    ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
                     ?.content
                     ?.sectionListRenderer
             ) { "BrowseResponse doesn't contain content" }

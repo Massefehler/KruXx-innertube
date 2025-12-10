@@ -13,6 +13,8 @@ import me.knighthat.innertube.response.BrowseResponse
 import me.knighthat.innertube.response.MusicResponsiveListItemRenderer
 import me.knighthat.innertube.response.MusicTwoRowItemRenderer
 import me.knighthat.innertube.response.Runs
+import me.knighthat.innertube.response.SectionListRenderer
+import me.knighthat.innertube.response.Tabs
 import me.knighthat.innertube.response.Thumbnails
 import java.net.URI
 
@@ -108,13 +110,11 @@ internal data class InnertubeAlbumImpl(
                 browseResponse.contents
                               ?.twoColumnBrowseResultsRenderer
                               ?.tabs
-                              ?.firstOrNull()
-                              ?.tabRenderer
+                              ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
                               ?.content
                               ?.sectionListRenderer
                               ?.contents
-                              ?.firstOrNull()
-                              ?.musicResponsiveHeaderRenderer
+                              ?.firstNotNullOfOrNull( SectionListRenderer.Content::musicResponsiveHeaderRenderer )
             ) { "missing musicResponsiveHeaderRenderer while parsing twoColumnBrowseResultsRenderer" }
             val thumbnails = renderer.thumbnail.toThumbnailList()
             val artists = renderer.straplineTextOne?.extractArtistAndAlbum()?.artists.orEmpty()

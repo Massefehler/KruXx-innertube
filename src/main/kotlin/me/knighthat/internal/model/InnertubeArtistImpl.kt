@@ -8,6 +8,7 @@ import me.knighthat.innertube.response.BrowseResponse
 import me.knighthat.innertube.response.MusicResponsiveListItemRenderer
 import me.knighthat.innertube.response.MusicTwoRowItemRenderer
 import me.knighthat.innertube.response.PrimaryResults.Results.Content.VideoSecondaryInfoRenderer.Owner
+import me.knighthat.innertube.response.Tabs
 import me.knighthat.innertube.response.Thumbnails
 
 @Serializable
@@ -65,8 +66,7 @@ internal data class InnertubeArtistImpl(
                 response.contents
                         ?.singleColumnBrowseResultsRenderer
                         ?.tabs
-                        ?.firstOrNull()
-                        ?.tabRenderer
+                        ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
                         ?.content
                         ?.sectionListRenderer
                         ?.contents

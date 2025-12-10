@@ -4,6 +4,8 @@ import me.knighthat.innertube.model.InnertubeItem
 import me.knighthat.innertube.model.InnertubeSearch
 import me.knighthat.innertube.response.Continuation
 import me.knighthat.innertube.response.SearchResponse
+import me.knighthat.innertube.response.SectionListRenderer
+import me.knighthat.innertube.response.Tabs
 
 
 data class InnertubeSearchImpl(
@@ -19,13 +21,11 @@ data class InnertubeSearchImpl(
                 response.contents
                     .tabbedSearchResultsRenderer
                     .tabs
-                    .firstOrNull()
-                    ?.tabRenderer
+                    .firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
                     ?.content
                     ?.sectionListRenderer
                     ?.contents
-                    ?.firstOrNull()
-                    ?.musicShelfRenderer
+                    ?.firstNotNullOfOrNull(SectionListRenderer.Content::musicShelfRenderer )
             ) { "SearchResponse doesn't have content" }
             val items = renderer.contents
                 .mapNotNull { content ->
