@@ -2,7 +2,7 @@ package me.knighthat.innertube.response
 
 interface MusicQueueRenderer {
 
-    val content: Content
+    val content: Content?
 
     interface Content {
 

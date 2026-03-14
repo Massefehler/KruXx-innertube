@@ -5,7 +5,7 @@ import me.knighthat.innertube.response.MusicQueueRenderer
 
 @Serializable
 internal data class MusicQueueRendererImpl(
-    override val content: ContentImpl
+    override val content: ContentImpl?
 ): MusicQueueRenderer {
 
     @Serializable
