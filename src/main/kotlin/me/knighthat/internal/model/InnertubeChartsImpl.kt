@@ -1,8 +1,11 @@
 package me.knighthat.internal.model
 
 import kotlinx.serialization.Serializable
+import me.knighthat.innertube.PageType
 import me.knighthat.innertube.model.InnertubeCharts
+import me.knighthat.innertube.model.InnertubeItem
 import me.knighthat.innertube.model.Section
+import me.knighthat.innertube.response.MusicCarouselShelfRenderer
 import me.knighthat.innertube.response.MusicMultiSelectMenuRenderer
 import me.knighthat.innertube.response.MusicShelfRenderer
 import me.knighthat.innertube.response.SectionListRenderer
@@ -35,7 +38,7 @@ internal data class InnertubeChartsImpl(
                        ?.also { menu = it }
 
                 content.musicCarouselShelfRenderer
-                       ?.let( ::createModelSectionFrom )
+                       ?.let(SectionImpl::from )
                        ?.also( sections::add )
             }
 
@@ -101,6 +104,64 @@ internal data class InnertubeChartsImpl(
                         decodedKey
                     )
                 }
+            }
+        }
+    }
+
+    @Serializable
+    internal data class SectionImpl(
+        override val title: String,
+        override val contents: List<InnertubeItem>,
+        override val accessibilityLabel: String?,
+        override val browseId: String?,
+        override val params: String?
+    ) : Section {
+
+        companion object {
+
+            fun from( renderer: MusicCarouselShelfRenderer ): Section? {
+                val contents = mutableListOf<InnertubeItem>()
+                renderer.contents.forEach { content ->
+                    content.musicResponsiveListItemRenderer
+                           ?.let( InnertubeRankedArtistImpl::from )
+                           ?.also( contents::add )
+
+                    content.musicTwoRowItemRenderer
+                            ?.let { itemRenderer ->
+                                var result: InnertubeItem? = null
+
+                                itemRenderer.navigationEndpoint
+                                            .browseEndpoint
+                                            ?.browseEndpointContextSupportedConfigs
+                                            ?.browseEndpointContextMusicConfig
+                                            ?.pageType
+                                            ?.also { pageType ->
+                                                result = when( pageType ) {
+                                                    PageType.ARTIST     -> InnertubeArtistImpl.from( itemRenderer )
+                                                    PageType.ALBUM      -> InnertubeAlbumImpl.from( itemRenderer )
+                                                    PageType.PLAYLIST   -> InnertubePlaylistImpl.from( itemRenderer )
+                                                    else                -> null
+                                                }
+                                            }
+
+                                itemRenderer.navigationEndpoint
+                                            .watchEndpoint
+                                            ?.also {
+                                                result = InnertubeSongImpl.from( itemRenderer )
+                                            }
+
+                                result
+                            }
+                            ?.also( contents::add )
+                }
+
+                return SectionImpl(
+                    renderer.header.musicCarouselShelfBasicHeaderRenderer.title.firstText,
+                    contents,
+                    null,
+                    null,
+                    null
+                )
             }
         }
     }
