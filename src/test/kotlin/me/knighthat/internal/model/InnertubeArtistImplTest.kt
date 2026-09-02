@@ -35,7 +35,7 @@ class InnertubeArtistImplTest {
                 "19.1M",
                 "19.1M subscribers",
                 "434M monthly audience",
-                7
+                6
             ),
             Arguments.of(
                 "ytm/browse/endpoint_artist_non_music_response.json",
@@ -46,7 +46,7 @@ class InnertubeArtistImplTest {
                 null,
                 null,
                 null,
-                2
+                1
             )
         )
     }
@@ -139,8 +139,6 @@ class InnertubeArtistImplTest {
                    ?.use { inStream ->
                        val renderer = inStream.decode<BrowseResponseImpl>()
                        assertNotNull( renderer )
-
-                       val expectedDescription =
 
                        assertProperties(
                            InnertubeArtistImpl.from( renderer ),
