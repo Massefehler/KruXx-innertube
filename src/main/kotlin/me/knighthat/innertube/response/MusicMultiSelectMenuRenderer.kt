@@ -24,8 +24,9 @@ interface MusicMultiSelectMenuRenderer {
 
             val title: Runs
             val formItemEntityKey: String
-            val selectedAccessibility: Accessibility
-            val deselectedAccessibility: Accessibility
+            /** Absent since 2026: YouTube sends a single `accessibility` instead. */
+            val selectedAccessibility: Accessibility?
+            val deselectedAccessibility: Accessibility?
         }
 
         interface DividerRenderer {
