@@ -74,7 +74,12 @@ internal data class InnertubeSongImpl(
             )
         }
 
-        fun from( renderer: MusicResponsiveListItemRenderer ): InnertubeSong {
+        fun from( renderer: MusicResponsiveListItemRenderer ): InnertubeSong =
+            requireNotNull( fromOrNull(renderer) ) {
+                "MusicResponsiveListItemRenderer doesn't contain a video id"
+            }
+
+        fun fromOrNull( renderer: MusicResponsiveListItemRenderer ): InnertubeSong? {
             var id: String? = null
             var title = ""
             val artists = ArrayList<Runs.Run>()
@@ -111,9 +116,10 @@ internal data class InnertubeSongImpl(
                 }
             }
 
+            val videoId = id ?: renderer.playlistItemData?.videoId ?: return null
+
             return InnertubeSongImpl(
-                // [id] must not be null under any circumstances
-                id ?: renderer.playlistItemData!!.videoId!!,
+                videoId,
                 title,
                 renderer.thumbnail.toThumbnailList(),
                 renderer.badges.containsExplicitBadge,

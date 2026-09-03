@@ -113,14 +113,21 @@ internal class InnertubeImpl: Innertube {
                 append( "X-YouTube-Client-Name", client.xClientName.toString() )
                 append( "X-YouTube-Client-Version", client.clientVersion )
 
-                if( useLogin && "SAPISID" in provider.cookies ) {
+                if( useLogin ) {
                     val sapisidHash = getSapisidHash( provider.cookies, host )
                     if( sapisidHash.isNotBlank() ) {
                         append( HttpHeaders.Cookie, provider.cookies )
-                        append(
-                            name = HttpHeaders.Authorization,
-                            value = "SAPISIDHASH $sapisidHash SAPISID1PHASH $sapisidHash SAPISID3PHASH $sapisidHash"
-                        )
+                        // YouTube ties an account session to the visitor id it was created with and
+                        // expects it as a header, not only inside the request body. Both working
+                        // clients in this app (Metrolist, it.fast4x.innertube) send these two.
+                        provider.visitorData
+                                .takeIf( String::isNotBlank )
+                                ?.let { append( "X-Goog-Visitor-Id", it ) }
+                        // Google expects exactly "SAPISIDHASH <seconds>_<sha1>". The previous
+                        // value carried a "_u" suffix and reused that single hash for the
+                        // SAPISID1PHASH/SAPISID3PHASH variants, which YouTube answers with
+                        // HTTP 401 even though the cookie itself is valid.
+                        append( HttpHeaders.Authorization, "SAPISIDHASH $sapisidHash" )
                     }
                 }
 
@@ -139,7 +146,7 @@ internal class InnertubeImpl: Innertube {
         val context = getContext( Context.WEB_REMIX_DEFAULT, localization, visitorData, useLogin )
         val body = BrowseBody.builder( context ).builder().build()
 
-        return post( Endpoints.BROWSE, body ).body<BrowseResponseImpl>()
+        return post( Endpoints.BROWSE, body, useLogin = useLogin ).body<BrowseResponseImpl>()
     }
 
     @Throws(IOException::class)
@@ -153,7 +160,7 @@ internal class InnertubeImpl: Innertube {
         val context = getContext( template, localization, visitorData, useLogin )
         val body = NextBody.builder( context ).builder().build()
 
-        return post( Endpoints.NEXT , body ).body<NextResponseImpl>()
+        return post( Endpoints.NEXT, body, useLogin = useLogin ).body<NextResponseImpl>()
     }
 
     override fun setProvider( provider: Innertube.KtorProvider ) {
@@ -188,7 +195,7 @@ internal class InnertubeImpl: Innertube {
                           ?.musicPlaylistShelfRenderer
                           ?.contents
                           ?.mapNotNull( MusicPlaylistShelfRenderer.Content::musicResponsiveListItemRenderer )
-                          ?.map( InnertubeSongImpl::from )
+                          ?.mapNotNull( InnertubeSongImpl::fromOrNull )
                           .orEmpty()
         }
 

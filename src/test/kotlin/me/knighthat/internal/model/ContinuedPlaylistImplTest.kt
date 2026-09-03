@@ -2,6 +2,8 @@ package me.knighthat.internal.model
 
 import me.knighthat.innertube.decode
 import me.knighthat.internal.response.MusicPlaylistShelfRendererImpl
+import me.knighthat.internal.response.MusicResponsiveListItemRendererImpl
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertNull
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -28,6 +30,30 @@ class ContinuedPlaylistImplTest {
                     100
                 )
             )
+    }
+
+    @Test
+    fun testUnavailableItemWithoutVideoIdIsSkipped() {
+        val unavailableItem = MusicResponsiveListItemRendererImpl(
+            thumbnail = null,
+            overlay = null,
+            playlistItemData = null,
+            flexColumnDisplayStyle = null,
+            navigationEndpoint = null,
+            itemHeight = null,
+            index = null,
+            customIndexColumn = null
+        )
+        val contents = listOf(
+            MusicPlaylistShelfRendererImpl.ContentImpl(
+                musicResponsiveListItemRenderer = unavailableItem,
+                continuationItemRenderer = null
+            )
+        )
+
+        val continuedPlaylist = ContinuedPlaylistImpl.from( contents )
+
+        assertEquals( 0, continuedPlaylist.songs.size )
     }
 
     @ParameterizedTest

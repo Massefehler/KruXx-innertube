@@ -25,7 +25,7 @@ internal data class ContinuedPlaylistImpl(
                     ?.also { continuation = it }
 
                 item.musicResponsiveListItemRenderer
-                    ?.let( InnertubeSongImpl::from )
+                    ?.let( InnertubeSongImpl::fromOrNull )
                     ?.also( songs::add )
             }
 
